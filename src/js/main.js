@@ -38,7 +38,8 @@ function filterNonImages(files) {
     return imgs;
 }
 function thumb(allFiles) {
-    if (allFiles == null || allFiles == undefined) {
+    if (allFiles == null || allFiles == undefined)
+    {
         document.write("This Browser has no support for HTML5 FileReader yet!");
         return false;
     }
@@ -93,4 +94,19 @@ function getThumbnail(e){
         }
     }
     return img.src;
+}
+
+function init()
+{
+    ask({"requestType":"imageSets"}, function(j){
+        var namesArr = j["sets"]; //get array of image set names
+        var parent = document.getElementById("showImgSets");
+        for(var i = 0; i < namesArr.length; i++)
+        {
+            var aLabel = document.createElement("Button");
+            aLabel.className = "PicSet";
+            aLabel.innerHTML = namesArr[i];
+            parent.appendChild(aLabel);
+        }
+    });
 }

@@ -14,7 +14,7 @@
         <link rel="stylesheet" href="css/main.css">
         <script src="js/vendor/modernizr-2.8.3.min.js"></script>
     </head>
-    <body>
+    <body onload="init()">
         <!--[if lt IE 8]>
             <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
@@ -22,6 +22,11 @@
         <!-- Add your site or application content here -->
         <p>OpenImage</p>
         <label id = "ms">Time in (ms): </label>
+        <br>
+        <div id="showImgSets">
+            <Button class = "PicSet"> chairs </Button>
+            <Button class = "PicSet"> animals </Button>
+        </div>
         <br>
         <button onclick="PostReq()">Press Me</button>
 
@@ -44,7 +49,7 @@
         <input id="txtThumbSize" type="text" style="width: 40px" value="64"/> px<hr />
         <label> Select File To Create Thumbnail : </label>
         <input type="file" id="input" multiple onchange="thumb(this.files)"> <hr/>
-        <label> Select File To Create Thumbnail : </label>
+        <label> Select Folder to upload : </label>
         <input type="file" id="input2" webkitdirectory directory multiple onchange="thumb(this.files)"> <hr/>
         <label> Image Selected: </label>
         <label id="sel"> NONE </label>
