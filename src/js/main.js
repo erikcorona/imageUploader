@@ -59,7 +59,10 @@ function thumb(allFiles) {
                 {
                     var obj = {"requestType" : "saveImages",
                                "content" :
-                                           {"images" : b64Images}
+                                           {
+                                               "setName": "images1",
+                                               "images" : b64Images
+                                           }
                               };
                     ask(obj,function(j){alert(j["response"])});
                 }
