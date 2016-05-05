@@ -10,7 +10,7 @@
         <link rel="apple-touch-icon" href="apple-touch-icon.png">
         <!-- Place favicon.ico in the root directory -->
 
-        <link rel="stylesheet" href="css/normalize.css">
+        <!--<link rel="stylesheet" href="css/normalize.css">-->
         <link rel="stylesheet" href="css/main.css">
         <script src="js/vendor/modernizr-2.8.3.min.js"></script>
     </head>
@@ -20,18 +20,25 @@
         <![endif]-->
 
         <!-- Add your site or application content here -->
-        <p>OpenImage</p>
-        <label id = "ms">Time in (ms): </label>
+        <p>ImageAnn</p>
+        <label id = "errorLabel"> OK </label>
         <br>
+        <label id = "ms">Time in (ms): </label>
+        <hr>
+        <div id = "pingRequestDiv">
+            <p>Ping Test</p>
+            <Button onclick="ping()"> ping </Button>
+            <label id = "pingLabel"> </label>
+        </div>
+        <hr>
         <div id="showImgSets">
             <Button class = "PicSet"> chairs </Button>
             <Button class = "PicSet"> animals </Button>
         </div>
-        <br>
         <button onclick="PostReq()">Press Me</button>
 
-        <script src="https://code.jquery.com/jquery-{{JQUERY_VERSION}}.min.js"></script>
-        <script>window.jQuery || document.write('<script src="js/vendor/jquery-{{JQUERY_VERSION}}.min.js"><\/script>')</script>
+        <script src="https://code.jquery.com/jquery-2.2.3.min.js"></script>
+        <script>window.jQuery || document.write('<script src="js/vendor/jquery-2.2.3.min.js"><\/script>')</script>
         <script src="js/plugins.js"></script>
         <script src="js/main.js"></script>
 
@@ -45,7 +52,7 @@
             ga('create','UA-XXXXX-X','auto');ga('send','pageview');
         </script>
 
-        <label> Thumbanil Size: </label>
+        <label> Thumbnail Size: </label>
         <input id="txtThumbSize" type="text" style="width: 40px" value="64"/> px<hr />
         <label> Select File To Create Thumbnail : </label>
         <input type="file" id="input" multiple onchange="thumb(this.files)"> <hr/>

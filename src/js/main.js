@@ -9,7 +9,13 @@ function ask(request, handleReply)
             var serverTime = responseReceivedTime - ms;
             var msLabel = document.getElementById("ms");
             msLabel.innerHTML = "Time (ms) " + serverTime;
-            handleReply(JSON.parse((xhttp.responseText)));
+            var returnedJson = JSON.parse(xhttp.responseText);
+            if(returnedJson["status"] != "SUCCESS")
+            {
+                var errorLab = document.getElementById("errorLabel");
+                errorLab.innerHTML = returnedJson["message"];
+            }
+            handleReply(returnedJson);
         }
     };
 
@@ -19,13 +25,31 @@ function ask(request, handleReply)
     xhttp.send(JSON.stringify(request));
 }
 
+function newAsk(request, params)
+{
+    return {"guid" : "testGUID", "request" : request, "parameters" : params};
+}
+
+function ping()
+{
+    var request  = newAsk("ping", {});
+    var handler = function(j)
+    {
+       var pingLabel = document.getElementById("pingLabel");
+       pingLabel.innerHTML = j["status"];
+    };
+    ask(request, handler);
+}
+
 function PostReq()
 {
     // ask({"requestType" : "ping"},function(j){alert(JSON.stringify(j));});
-    ask({"requestType" : "getImage"}, function(j){
-        var image = new Image();
-        image.src = 'data:image/jpg;base64,' + j["img"];
-        document.body.appendChild(image);
+    ask(
+        {"requestType" : "getImage"},
+        function(j){
+            var image = new Image();
+            image.src = 'data:image/jpg;base64,' + j["img"];
+            document.body.appendChild(image);
     });
 }
 
@@ -53,11 +77,12 @@ function thumb(allFiles) {
 
         if (reader != null) {
             reader.onload = function(e){
-                var src = getThumbnail(e);
+                var src = showThumbGetPic(e);
                 b64Images.push(src);
+
                 if(files.length == b64Images.length)
                 {
-                    var obj = {"requestType" : "saveImages",
+                    var obj = {"request" : "saveImages",
                                "content" :
                                            {
                                                "setName": "images1",
@@ -73,10 +98,11 @@ function thumb(allFiles) {
     }
 }
 
-function getThumbnail(e){
+function showThumbGetPic(e){
     var myCan = document.createElement('canvas');
-    var img = new Image();
-    img.src = e.target.result;
+    var img   = new Image();
+    img.src   = e.target.result;
+
     img.onload = function () {
         myCan.id = "myTempCanvas";
         var tsize = document.getElementById("txtThumbSize").value;
@@ -101,15 +127,15 @@ function getThumbnail(e){
 
 function init()
 {
-    ask({"requestType":"imageSets"}, function(j){
-        var namesArr = j["sets"]; //get array of image set names
-        var parent = document.getElementById("showImgSets");
-        for(var i = 0; i < namesArr.length; i++)
-        {
-            var aLabel = document.createElement("Button");
-            aLabel.className = "PicSet";
-            aLabel.innerHTML = namesArr[i];
-            parent.appendChild(aLabel);
-        }
-    });
+//     ask({"requestType":"imageSets"}, function(j){
+//         var namesArr = j["sets"]; //get array of image set names
+//         var parent = document.getElementById("showImgSets");
+//         for(var i = 0; i < namesArr.length; i++)
+//         {
+//             var aLabel = document.createElement("Button");
+//             aLabel.className = "PicSet";
+//             aLabel.innerHTML = namesArr[i];
+//             parent.appendChild(aLabel);
+//         }
+//     });
 }
