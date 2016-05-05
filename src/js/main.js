@@ -41,6 +41,131 @@ function ping()
     ask(request, handler);
 }
 
+function createAlbum()
+{
+    var name = document.getElementById("newAlbumName").value;
+    var params = {"name" : name};
+    var request = newAsk("newAlbum", params);
+    var handler = function(j)
+    {
+        showAlbums();
+    }
+
+    ask(request, handler);
+}
+
+function getImage()
+{
+
+    var album       = document.getElementById("getImageAlbum").value;
+    var imgFileName = document.getElementById("getImage").value;
+    
+    var params = {"album" : album, "name" : imgFileName};
+    
+    var request = newAsk("getImage", params);
+    var handler = function(j)
+    {
+        var image = new Image();
+        image.src = 'data:image/jpg;base64,' + j["data"]["image"];
+        document.body.appendChild(image);
+    }
+    
+    ask(request, handler);
+}
+function eraseImage()
+{
+    var album       = document.getElementById("eraseImageAlbum").value;
+    var imgFileName = document.getElementById("eraseImage").value;
+    
+    var params = {"album" : album, "name" : imgFileName};
+    var request = newAsk("eraseImage", params);
+    var handler = function(j)
+    {
+        displayImages(album);
+    }
+    
+    ask(request,handler);
+}
+
+function uploadImage2(aFile)
+{
+    var album = document.getElementById("uploadAlbumName").value;
+    var reader = new FileReader();
+
+    if(reader != null)
+    {
+        reader.onload = function(e)
+        {
+            var b64 = showThumbGetPic(e);
+            var params = {"album" : album, "name" : aFile.name, "image" : b64};
+            var request = newAsk("saveImage", params);
+            var handler = function(j){
+                   displayImages(album);
+               };
+            ask(request, handler);
+        };
+        reader.readAsDataURL(aFile);
+    }
+}
+function uploadImage(allfiles)
+{
+    if (allfiles == null || allfiles == undefined)
+    {
+        document.write("This Browser has no support for HTML5 FileReader yet!");
+        return false;
+    }
+
+    var files = filterNonImages(allfiles);
+
+    for (var i = 0; i < files.length; i++) {
+        var file = files[i];
+        uploadImage2(file);
+    }
+}
+
+function displayImages(album)
+{
+    var params = {"album" : album};
+    var request = newAsk("imageNames", params);
+    var handler = function(j)
+    {
+        var images = document.getElementById("images");
+        images.innerHTML = j["data"]["images"];
+    }
+
+    ask(request, handler);
+}
+
+function showImages()
+{
+    var album = document.getElementById("albumName").value;
+    displayImages(album);
+}
+
+function eraseAlbum()
+{
+    var name = document.getElementById("eraseAlbumName").value;
+    var params = {"name" : name};
+    var request = newAsk("eraseAlbum", params);
+    var handler = function(j)
+    {
+        showAlbums();
+    }
+
+    ask(request, handler);
+}
+
+function showAlbums()
+{
+    var request = newAsk("albumNames", {})
+    var handler = function(j)
+    {
+        var albums = document.getElementById("albums");
+        albums.innerHTML = j["data"]["albums"];
+    }
+
+    ask(request, handler);
+}
 function PostReq()
 {
     // ask({"requestType" : "ping"},function(j){alert(JSON.stringify(j));});
@@ -61,6 +186,7 @@ function filterNonImages(files) {
             imgs.push(files[i]);
     return imgs;
 }
+
 function thumb(allFiles) {
     if (allFiles == null || allFiles == undefined)
     {
@@ -121,7 +247,7 @@ function showThumbGetPic(e){
             else
                 alert('unable to get context');
         }
-    }
+    };
     return img.src;
 }
 
