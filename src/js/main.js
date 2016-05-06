@@ -100,7 +100,7 @@ function uploadImage2(aFile)
             var params = {"album" : album, "name" : aFile.name, "image" : b64};
             var request = newAsk("saveImage", params);
             var handler = function(j){
-                if(j["message"].length == 0)
+                if(j["status"] == "SUCCESS")
                    displayImages(album);
                };
             ask(request, handler);
