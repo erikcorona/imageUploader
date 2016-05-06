@@ -47,7 +47,7 @@ function createAlbum()
     var name    = document.getElementById("newAlbumName").value;
     var params  = {"name" : name};
     var request = newAsk("newAlbum", params);
-    var handler = function(j) { if(j["status"] != "SUCCESS"){showAlbums();} };
+    var handler = function(j) { if(j["status"] == "SUCCESS"){showAlbums();} };
     ask(request, handler);
 }
 
@@ -150,7 +150,8 @@ function eraseAlbum()
     var request = newAsk("eraseAlbum", params);
     var handler = function(j)
     {
-        showAlbums();
+        if(j["status"] == "SUCCESS")
+            showAlbums();
     };
 
     ask(request, handler);
