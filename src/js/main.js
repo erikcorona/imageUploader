@@ -47,7 +47,7 @@ function createAlbum()
     var name    = document.getElementById("newAlbumName").value;
     var params  = {"name" : name};
     var request = newAsk("newAlbum", params);
-    var handler = function(j) { if(j["message"].length == 0){showAlbums();} };
+    var handler = function(j) { if(j["status"] != "SUCCESS"){showAlbums();} };
     ask(request, handler);
 }
 
@@ -62,8 +62,7 @@ function getImage()
     var request = newAsk("getImage", params);
     var handler = function(j)
     {
-        alert(j["message"]);
-        if(j["message"] == 0) {
+        if(j["status"] == "SUCCESS") {
             var image = new Image();
             image.src = 'data:image/jpg;base64,' + j["data"]["image"];
             document.body.appendChild(image);
