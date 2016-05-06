@@ -61,9 +61,12 @@ function getImage()
 
     var request = newAsk("getImage", params);
     var handler = function(j)
-    {var image = new Image();
-        image.src = 'data:image/jpg;base64,' + j["data"]["image"];
-        document.body.appendChild(image);
+    {
+        if(j["message"] == 0) {
+            var image = new Image();
+            image.src = 'data:image/jpg;base64,' + j["data"]["image"];
+            document.body.appendChild(image);
+        }
     };
 
     ask(request, handler);
