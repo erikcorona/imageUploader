@@ -43,14 +43,10 @@ function ping()
 
 function createAlbum()
 {
-    var name = document.getElementById("newAlbumName").value;
-    var params = {"name" : name};
+    var name    = document.getElementById("newAlbumName").value;
+    var params  = {"name" : name};
     var request = newAsk("newAlbum", params);
-    var handler = function(j)
-    {
-        showAlbums();
-    }
-
+    var handler = function(j) { showAlbums(); };
     ask(request, handler);
 }
 
@@ -59,31 +55,32 @@ function getImage()
 
     var album       = document.getElementById("getImageAlbum").value;
     var imgFileName = document.getElementById("getImage").value;
-    
+
     var params = {"album" : album, "name" : imgFileName};
-    
+
     var request = newAsk("getImage", params);
     var handler = function(j)
     {
         var image = new Image();
         image.src = 'data:image/jpg;base64,' + j["data"]["image"];
         document.body.appendChild(image);
-    }
-    
+    };
+
     ask(request, handler);
 }
+
 function eraseImage()
 {
     var album       = document.getElementById("eraseImageAlbum").value;
     var imgFileName = document.getElementById("eraseImage").value;
-    
+
     var params = {"album" : album, "name" : imgFileName};
     var request = newAsk("eraseImage", params);
     var handler = function(j)
     {
         displayImages(album);
-    }
-    
+    };
+
     ask(request,handler);
 }
 
@@ -131,7 +128,7 @@ function displayImages(album)
     {
         var images = document.getElementById("images");
         images.innerHTML = j["data"]["images"];
-    }
+    };
 
     ask(request, handler);
 }
@@ -150,32 +147,21 @@ function eraseAlbum()
     var handler = function(j)
     {
         showAlbums();
-    }
+    };
 
     ask(request, handler);
 }
 
 function showAlbums()
 {
-    var request = newAsk("albumNames", {})
+    var request = newAsk("albumNames", {});
     var handler = function(j)
     {
         var albums = document.getElementById("albums");
         albums.innerHTML = j["data"]["albums"];
-    }
+    };
 
     ask(request, handler);
-}
-function PostReq()
-{
-    // ask({"requestType" : "ping"},function(j){alert(JSON.stringify(j));});
-    ask(
-        {"requestType" : "getImage"},
-        function(j){
-            var image = new Image();
-            image.src = 'data:image/jpg;base64,' + j["img"];
-            document.body.appendChild(image);
-    });
 }
 
 function filterNonImages(files) {
@@ -196,7 +182,7 @@ function thumb(allFiles) {
 
     var files = filterNonImages(allFiles);
     var b64Images = [];
-    for (i = 0; i < files.length; i++) {
+    for (var i = 0; i < files.length; i++) {
         var file = files[i];
 
         var reader = new FileReader();
