@@ -62,6 +62,7 @@ function getImage()
     var request = newAsk("getImage", params);
     var handler = function(j)
     {
+        alert(j["message"]);
         if(j["message"] == 0) {
             var image = new Image();
             image.src = 'data:image/jpg;base64,' + j["data"]["image"];
