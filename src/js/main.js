@@ -47,7 +47,7 @@ function createAlbum()
     var name    = document.getElementById("newAlbumName").value;
     var params  = {"name" : name};
     var request = newAsk("newAlbum", params);
-    var handler = function(j) { if(j.empty()){return;} showAlbums(); };
+    var handler = function(j) { if(j["message"].length == 0){showAlbums();} };
     ask(request, handler);
 }
 
