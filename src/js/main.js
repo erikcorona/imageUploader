@@ -19,8 +19,8 @@ function ask(request, handleReply)
         }
     };
 
-    xhttp.open("POST", "http://54.237.198.126:8088",true);
-    // xhttp.open("POST", "http://127.0.0.1:8088",true);
+    // xhttp.open("POST", "http://54.237.198.126:8088",true);
+    xhttp.open("POST", "http://127.0.0.1:8088",true);
     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     var ms = new Date().getTime();
     xhttp.send(JSON.stringify(request));
@@ -51,9 +51,46 @@ function createAlbum()
     ask(request, handler);
 }
 
+
+function showCategories()
+{
+    var request = newAsk("categoryNames", {});
+    var handler = function(j)
+    {
+        var categories = document.getElementById("categories");
+        categories.innerHTML = j["data"]["names"];
+    };
+
+    ask(request, handler);
+}
+
+function eraseCategory()
+{
+    var name = document.getElementById("eraseCategoryName").value;
+    var params = {"name" : name};
+    var request = newAsk("eraseCategory", params);
+    var handler = function(j)
+    {
+        if(j["status"] == "SUCCESS")
+            showCategories();
+    };
+
+    ask(request, handler);
+}
+
+function createCategory()
+{
+    var name    = document.getElementById("newCategoryName").value;
+    var params  = {"name" : name};
+    var request = newAsk("newCategory", params);
+    var handler = function(j) { if(j["status"] == "SUCCESS"){
+        showCategories();}
+    };
+    ask(request, handler);
+}
+
 function getImage()
 {
-
     var album       = document.getElementById("getImageAlbum").value;
     var imgFileName = document.getElementById("getImage").value;
 
@@ -108,6 +145,37 @@ function uploadImage2(aFile)
         reader.readAsDataURL(aFile);
     }
 }
+
+function eraseTerms()
+{
+    var category = document.getElementById("eraseTermCategory").value;
+    var strTerms = document.getElementById("eraseTerms").value;
+    var terms = strTerms.split(",");
+    var params = {"category" : category, "terms" : terms};
+    var handler = function(j)
+    {
+        // if(j["status"] == "SUCCESS")
+        //     displayTerms(category);
+    };
+    var request = newAsk("eraseTerms", params);
+    ask(request,handler);
+}
+
+function uploadTerms()
+{
+    var category = document.getElementById("uploadCategoryName").value;
+    var strTerms = document.getElementById("newTerms").value;
+    var terms = strTerms.split(",");
+    var params = {"category" : category, "terms" : terms};
+    var handler = function(j)
+    {
+        if(j["status"] == "SUCCESS")
+            displayTerms(category);
+    };
+    var request = newAsk("newTerms", params);
+    ask(request,handler);
+}
+
 function uploadImage(allfiles)
 {
     if (allfiles == null || allfiles == undefined)
@@ -135,6 +203,24 @@ function displayImages(album)
     };
 
     ask(request, handler);
+}
+
+function displayTerms(categoryName)
+{
+    var params = {"category" : categoryName};
+    var request = newAsk("getTerms", params);
+    var handler = function(j)
+    {
+        var terms = document.getElementById("terms");
+        terms.innerHTML = j["data"]["terms"];
+    };
+
+    ask(request, handler);
+}
+function getTerms()
+{
+    var categoryName = document.getElementById("categoryName").value;
+    displayTerms(categoryName);
 }
 
 function showImages()
