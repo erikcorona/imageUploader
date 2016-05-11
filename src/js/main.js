@@ -135,9 +135,7 @@ function removeAnnotation(button, album, imgFileName, category, term)
         var handler = function(j)
         {
             if(j["status"] == "SUCCESS")
-            {
                 showAnnotations(album, imgFileName);
-            }
         };
         ask(request, handler);
     }
