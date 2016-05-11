@@ -19,8 +19,8 @@ function ask(request, handleReply)
         }
     };
 
-    // xhttp.open("POST", "http://54.237.198.126:8088",true);
-    xhttp.open("POST", "http://127.0.0.1:8088",true);
+    xhttp.open("POST", "http://54.237.198.126:8089",true);
+    // xhttp.open("POST", "http://127.0.0.1:8089",true);
     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     var ms = new Date().getTime();
     xhttp.send(JSON.stringify(request));
