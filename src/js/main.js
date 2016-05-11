@@ -51,6 +51,15 @@ function createAlbum()
     ask(request, handler);
 }
 
+function prettyCategories(termsDiv, aCategory)
+{
+    var href = document.createElement('a');
+    href.innerHTML = aCategory;
+    href.onclick = function () {
+        displayTerms(aCategory);
+    };
+    termsDiv.appendChild(href);
+}
 
 function showCategories()
 {
@@ -59,6 +68,13 @@ function showCategories()
     {
         var categories = document.getElementById("categories");
         categories.innerHTML = j["data"]["names"];
+
+        var dddiv = document.getElementById("myDropdown");
+        for(var i = 0; i < j["data"]["names"].length; i++)
+        {
+            var aCategory = j["data"]["names"][i];
+            prettyCategories(dddiv, aCategory);
+        }
     };
 
     ask(request, handler);
@@ -89,11 +105,8 @@ function createCategory()
     ask(request, handler);
 }
 
-function getImage()
+function getImageThumb(album, imgFileName)
 {
-    var album       = document.getElementById("getImageAlbum").value;
-    var imgFileName = document.getElementById("getImage").value;
-
     var params = {"album" : album, "name" : imgFileName};
 
     var request = newAsk("getImage", params);
@@ -102,11 +115,91 @@ function getImage()
         if(j["status"] == "SUCCESS") {
             var image = new Image();
             image.src = 'data:image/jpg;base64,' + j["data"]["image"];
-            document.body.appendChild(image);
+            var canv = showThumb(image);
+            canv.className = "rotatingImage";
+            canv.onclick = function(){
+                displaySelectedImage(album, imgFileName);
+            };
         }
     };
 
     ask(request, handler);
+}
+
+function removeAnnotation(button, album, imgFileName, category, term)
+{
+    button.onclick = function(j)
+    {
+        var params = {"album": album, "imageName": imgFileName, "category": category, "term": term};
+        var request = newAsk("eraseAnnotation", params);
+        var handler = function(j)
+        {
+            if(j["status"] == "SUCCESS")
+            {
+                showAnnotations(album, imgFileName);
+            }
+        };
+        ask(request, handler);
+    }
+
+}
+function showAnnotations(album, imgFileName)
+{
+    var params = {"album" : album, "imageName" : imgFileName};
+    var request = newAsk("getTags", params);
+    var handler = function(j)
+    {
+        if(j["status"] == "SUCCESS")
+        {
+
+            var imageTagsDiv = document.getElementById("imageTags");
+            clearChildren(imageTagsDiv);
+            for (var i = 0; i < j["data"]["terms"].length; i++) {
+                var button = document.createElement("button");
+                button.className = "PicSet";
+                var category = j["data"]["terms"][i]["category"];
+                var term = j["data"]["terms"][i]["term"];
+                button.innerHTML = category + ":" + term;
+                removeAnnotation(button, album, imgFileName, category, term);
+                imageTagsDiv.appendChild(button);
+            }
+        }
+    };
+    ask(request, handler);
+}
+
+function displaySelectedImage(album, imgFileName)
+{
+    var params = {"album" : album, "name" : imgFileName};
+
+    var request = newAsk("getImage", params);
+    var handler = function(j)
+    {
+        if(j["status"] == "SUCCESS") {
+            var image = new Image();
+            image.src = 'data:image/jpg;base64,' + j["data"]["image"];
+            var imgDiv = document.getElementById("selectedImage");
+            while(imgDiv.firstChild)
+                imgDiv.removeChild(imgDiv.firstChild);
+            imgDiv.appendChild(image);
+
+            var lab = document.getElementById("selectedImageName");
+            lab.innerHTML = imgFileName;
+
+            var albLabel = document.getElementById("selectedImageAlbumName");
+            albLabel.innerHTML = album;
+            showAnnotations(album, imgFileName);
+        }
+    };
+
+    ask(request, handler);
+}
+
+function getImage()
+{
+    var album       = document.getElementById("getImageAlbum").value;
+    var imgFileName = document.getElementById("getImage").value;
+    displaySelectedImage(album, imgFileName);
 }
 
 function eraseImage()
@@ -154,8 +247,8 @@ function eraseTerms()
     var params = {"category" : category, "terms" : terms};
     var handler = function(j)
     {
-        // if(j["status"] == "SUCCESS")
-        //     displayTerms(category);
+        if(j["status"] == "SUCCESS")
+            displayTerms(category);
     };
     var request = newAsk("eraseTerms", params);
     ask(request,handler);
@@ -200,9 +293,30 @@ function displayImages(album)
     {
         var images = document.getElementById("images");
         images.innerHTML = j["data"]["images"];
+        var imageNames = j["data"]["images"];
+
+        clearChildren(document.getElementById("thumbs"));
+        for(var i = 0; i < imageNames.length; i++)
+            getImageThumb(album,imageNames[i]);
     };
 
     ask(request, handler);
+}
+
+function tagImage(aButton, tagCategory, tagName, albumName, imgName)
+{
+    aButton.onclick = function()
+    {
+        var params = {"album" : albumName, "imageName" : imgName, "category": tagCategory, "term" : tagName}
+        var request = newAsk("tag", params);
+        var handler = function(j)
+        {
+            if(j["status"] == "SUCCESS") {
+                showAnnotations(albumName, imgName);
+            }
+        };
+        ask(request, handler);
+    };
 }
 
 function displayTerms(categoryName)
@@ -213,6 +327,21 @@ function displayTerms(categoryName)
     {
         var terms = document.getElementById("terms");
         terms.innerHTML = j["data"]["terms"];
+
+        var taggingDiv = document.getElementById("tagging");
+        while(taggingDiv.firstChild)
+            taggingDiv.removeChild(taggingDiv.firstChild);
+        for(var i = 0; i < j["data"]["terms"].length; i++)
+        {
+            var button = document.createElement("button");
+            button.className = "PicSet";
+            var tagName = j["data"]["terms"][i];
+            button.innerHTML = tagName;
+            var albumName = document.getElementById("selectedImageAlbumName").innerHTML;
+            var imgName   = document.getElementById("selectedImageName").innerHTML;
+            tagImage(button, categoryName, tagName, albumName, imgName);
+            taggingDiv.appendChild(button);
+        }
     };
 
     ask(request, handler);
@@ -243,6 +372,16 @@ function eraseAlbum()
     ask(request, handler);
 }
 
+function prettyAlbums(albumsDiv, anAlbum)
+{
+    var href = document.createElement('a');
+    href.innerHTML = anAlbum;
+    href.onclick = function () {
+        displayImages(anAlbum);
+    };
+    albumsDiv.appendChild(href);
+}
+
 function showAlbums()
 {
     var request = newAsk("albumNames", {});
@@ -250,6 +389,10 @@ function showAlbums()
     {
         var albums = document.getElementById("albums");
         albums.innerHTML = j["data"]["albums"];
+        var albumNames = j["data"]["albums"];
+        var albumsDD = document.getElementById("myAlbumsDropdown");
+        for(var i = 0; i < albumNames.length; i++)
+            prettyAlbums(albumsDD, albumNames[i]);
     };
 
     ask(request, handler);
@@ -264,41 +407,59 @@ function filterNonImages(files) {
     return imgs;
 }
 
-function thumb(allFiles) {
-    if (allFiles == null || allFiles == undefined)
-    {
-        document.write("This Browser has no support for HTML5 FileReader yet!");
-        return false;
-    }
+// function thumb(allFiles) {
+//     if (allFiles == null || allFiles == undefined)
+//     {
+//         document.write("This Browser has no support for HTML5 FileReader yet!");
+//         return false;
+//     }
+//
+//     var files = filterNonImages(allFiles);
+//     var b64Images = [];
+//     for (var i = 0; i < files.length; i++) {
+//         var file = files[i];
+//
+//         var reader = new FileReader();
+//
+//         if (reader != null) {
+//             reader.onload = function(e){
+//                 var src = showThumbGetPic(e);
+//                 b64Images.push(src);
+//
+//                 if(files.length == b64Images.length)
+//                 {
+//                     var obj = {"request" : "saveImages",
+//                                "content" :
+//                                            {
+//                                                "setName": "images1",
+//                                                "images" : b64Images
+//                                            }
+//                               };
+//                     ask(obj,function(j){alert(j["response"])});
+//                 }
+//                 return src;
+//             };
+//             reader.readAsDataURL(file);
+//         }
+//     }
+// }
 
-    var files = filterNonImages(allFiles);
-    var b64Images = [];
-    for (var i = 0; i < files.length; i++) {
-        var file = files[i];
+function clearChildren(el)
+{
+    while(el.firstChild)
+        el.removeChild(el.firstChild);
+}
 
-        var reader = new FileReader();
-
-        if (reader != null) {
-            reader.onload = function(e){
-                var src = showThumbGetPic(e);
-                b64Images.push(src);
-
-                if(files.length == b64Images.length)
-                {
-                    var obj = {"request" : "saveImages",
-                               "content" :
-                                           {
-                                               "setName": "images1",
-                                               "images" : b64Images
-                                           }
-                              };
-                    ask(obj,function(j){alert(j["response"])});
-                }
-                return src;
-            };
-            reader.readAsDataURL(file);
-        }
-    }
+function showThumb(img)
+{
+    var canv = document.createElement('canvas');
+    var ctx = canv.getContext('2d');
+    canv.width  = 64;
+    canv.height = 64;
+    ctx.drawImage(img, 0,0, canv.width, canv.height);
+    var thumbs = document.getElementById("thumbs");
+    thumbs.appendChild(canv);
+    return canv;
 }
 
 function showThumbGetPic(e){
@@ -308,7 +469,7 @@ function showThumbGetPic(e){
 
     img.onload = function () {
         myCan.id = "myTempCanvas";
-        var tsize = document.getElementById("txtThumbSize").value;
+        var tsize = 64;
         myCan.width = Number(tsize);
         myCan.height = Number(tsize);
         if (myCan.getContext) {
@@ -330,15 +491,33 @@ function showThumbGetPic(e){
 
 function init()
 {
-//     ask({"requestType":"imageSets"}, function(j){
-//         var namesArr = j["sets"]; //get array of image set names
-//         var parent = document.getElementById("showImgSets");
-//         for(var i = 0; i < namesArr.length; i++)
-//         {
-//             var aLabel = document.createElement("Button");
-//             aLabel.className = "PicSet";
-//             aLabel.innerHTML = namesArr[i];
-//             parent.appendChild(aLabel);
-//         }
-//     });
+    ping();
+    showAlbums();
+    showCategories();
+    displayImages("Cars");
+}
+
+/* When the user clicks on the button,
+ toggle between hiding and showing the dropdown content */
+function myFunction2() {
+    document.getElementById("myAlbumsDropdown").classList.toggle("show");
+}
+
+function myFunction() {
+    document.getElementById("myDropdown").classList.toggle("show");
+}
+
+// Close the dropdown menu if the user clicks outside of it
+window.onclick = function(event) {
+    if (!event.target.matches('.dropbtn')) {
+
+        var dropdowns = document.getElementsByClassName("dropdown-content");
+        var i;
+        for (i = 0; i < dropdowns.length; i++) {
+            var openDropdown = dropdowns[i];
+            if (openDropdown.classList.contains('show')) {
+                openDropdown.classList.remove('show');
+            }
+        }
+    }
 }
