@@ -19,8 +19,8 @@ function ask(request, handleReply)
         }
     };
 
-    xhttp.open("POST", "http://54.237.198.126:8089",true);
-    // xhttp.open("POST", "http://127.0.0.1:8089",true);
+    // xhttp.open("POST", "http://54.237.198.126:8089",true);
+    xhttp.open("POST", "http://127.0.0.1:8089",true);
     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     var ms = new Date().getTime();
     xhttp.send(JSON.stringify(request));
@@ -113,6 +113,7 @@ function getImageThumb(album, imgFileName)
     var handler = function(j)
     {
         if(j["status"] == "SUCCESS") {
+
             var image = new Image();
             image.src = 'data:image/jpg;base64,' + j["data"]["image"];
             var canv = showThumb(image);
@@ -187,6 +188,7 @@ function displaySelectedImage(album, imgFileName)
             var albLabel = document.getElementById("selectedImageAlbumName");
             albLabel.innerHTML = album;
             showAnnotations(album, imgFileName);
+            clearChildren(document.getElementById("tagging"));
         }
     };
 
@@ -198,6 +200,8 @@ function getImage()
     var album       = document.getElementById("getImageAlbum").value;
     var imgFileName = document.getElementById("getImage").value;
     displaySelectedImage(album, imgFileName);
+    // clearChildren(document.getElementById("tagging"));
+    // showCategories();
 }
 
 function eraseImage()
