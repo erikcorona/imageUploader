@@ -20,7 +20,7 @@ function ask(request, handleReply)
     };
 
     xhttp.open("POST", "http://54.237.198.126:8088",true);
-    // xhttp.open("POST", "http://127.0.0.1:8089",true);
+    // xhttp.open("POST", "http://127.0.0.1:8088",true);
     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     var ms = new Date().getTime();
     xhttp.send(JSON.stringify(request));
@@ -70,6 +70,7 @@ function showCategories()
         categories.innerHTML = j["data"]["names"];
 
         var dddiv = document.getElementById("myDropdown");
+        clearChildren(dddiv);
         for(var i = 0; i < j["data"]["names"].length; i++)
         {
             var aCategory = j["data"]["names"][i];
@@ -213,7 +214,10 @@ function eraseImage()
     var request = newAsk("eraseImage", params);
     var handler = function(j)
     {
-        displayImages(album);
+        if(j["status"] == "SUCCESS")
+            displayImages(album);
+        else
+            alert("somtehing went wrong with eraseImage()");
     };
 
     ask(request,handler);
