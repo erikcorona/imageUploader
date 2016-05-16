@@ -42,6 +42,27 @@ function ping()
     ask(request, handler);
 }
 
+function saveAnnotation()
+{
+    var album = getAlbum();
+    var imageName = getImageName();
+    var params = {"album": album, "imageName":"imageName","regions" : myImg.getRegion()};
+    var request = newAsk("tagImage", params);
+    var handler = function(j)
+    {
+        if(j["status"] == "SUCCESS")
+        {
+            reloadImage();
+        }
+    };
+    ask(request,handler);
+}
+
+function reloadImage()
+{
+    alert("Redraw image");
+}
+
 function createAlbum()
 {
     var name    = document.getElementById("newAlbumName").value;
@@ -130,13 +151,12 @@ function getImageThumb(album, imgFileName)
 
 function removeAnnotation(button, album, imgFileName, category, term)
 {
-    button.onclick = function(j)
+    button.onclick = function()
     {
         var params = {"album": album, "imageName": imgFileName, "category": category, "term": term};
         var request = newAsk("eraseAnnotation", params);
-        var handler = function(j)
-        {
-            if(j["status"] == "SUCCESS")
+        var handler = function (j) {
+            if (j["status"] == "SUCCESS")
                 showAnnotations(album, imgFileName);
         };
         ask(request, handler);
@@ -181,7 +201,9 @@ function displaySelectedImage(album, imgFileName)
             var imgDiv = document.getElementById("selectedImage");
             while(imgDiv.firstChild)
                 imgDiv.removeChild(imgDiv.firstChild);
-            imgDiv.appendChild(image);
+
+            myImg = new DrawOnImage(image);
+            imgDiv.appendChild(myImg.getCanvas());
 
             var lab = document.getElementById("selectedImageName");
             lab.innerHTML = imgFileName;
@@ -196,11 +218,21 @@ function displaySelectedImage(album, imgFileName)
     ask(request, handler);
 }
 
+function getAlbum()
+{
+    return document.getElementById("getImageAlbum").value;
+}
+
+function getImageName()
+{
+    return document.getElementById("getImage").value;
+}
 function getImage()
 {
-    var album       = document.getElementById("getImageAlbum").value;
-    var imgFileName = document.getElementById("getImage").value;
-    displaySelectedImage(album, imgFileName);
+    // var album       = document.getElementById("getImageAlbum").value;
+    // var imgFileName = document.getElementById("getImage").value;
+
+    displaySelectedImage(getAlbum(), getImageName);
     // clearChildren(document.getElementById("tagging"));
     // showCategories();
 }
@@ -313,7 +345,7 @@ function tagImage(aButton, tagCategory, tagName, albumName, imgName)
 {
     aButton.onclick = function()
     {
-        var params = {"album" : albumName, "imageName" : imgName, "category": tagCategory, "term" : tagName}
+        var params = {"album" : albumName, "imageName" : imgName, "category": tagCategory, "term" : tagName};
         var request = newAsk("tag", params);
         var handler = function(j)
         {
@@ -413,42 +445,7 @@ function filterNonImages(files) {
     return imgs;
 }
 
-// function thumb(allFiles) {
-//     if (allFiles == null || allFiles == undefined)
-//     {
-//         document.write("This Browser has no support for HTML5 FileReader yet!");
-//         return false;
-//     }
-//
-//     var files = filterNonImages(allFiles);
-//     var b64Images = [];
-//     for (var i = 0; i < files.length; i++) {
-//         var file = files[i];
-//
-//         var reader = new FileReader();
-//
-//         if (reader != null) {
-//             reader.onload = function(e){
-//                 var src = showThumbGetPic(e);
-//                 b64Images.push(src);
-//
-//                 if(files.length == b64Images.length)
-//                 {
-//                     var obj = {"request" : "saveImages",
-//                                "content" :
-//                                            {
-//                                                "setName": "images1",
-//                                                "images" : b64Images
-//                                            }
-//                               };
-//                     ask(obj,function(j){alert(j["response"])});
-//                 }
-//                 return src;
-//             };
-//             reader.readAsDataURL(file);
-//         }
-//     }
-// }
+
 
 function clearChildren(el)
 {
@@ -459,6 +456,7 @@ function clearChildren(el)
 function showThumb(img)
 {
     var canv = document.createElement('canvas');
+
     var ctx = canv.getContext('2d');
     canv.width  = 64;
     canv.height = 64;
@@ -509,7 +507,7 @@ function myFunction2() {
     document.getElementById("myAlbumsDropdown").classList.toggle("show");
 }
 
-function myFunction() {
+function categoriesDropDown() {
     document.getElementById("myDropdown").classList.toggle("show");
 }
 
@@ -526,4 +524,4 @@ window.onclick = function(event) {
             }
         }
     }
-}
+};
