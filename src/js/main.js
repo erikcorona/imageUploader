@@ -1,3 +1,4 @@
+// global myImg
 function ask(request, handleReply)
 {
     var xhttp = new XMLHttpRequest();
@@ -40,22 +41,6 @@ function ping()
        pingLabel.innerHTML = j["status"];
     };
     ask(request, handler);
-}
-
-function saveAnnotation()
-{
-    var album = getAlbum();
-    var imageName = getImageName();
-    var params = {"album": album, "imageName":"imageName","regions" : myImg.getRegion()};
-    var request = newAsk("tagImage", params);
-    var handler = function(j)
-    {
-        if(j["status"] == "SUCCESS")
-        {
-            reloadImage();
-        }
-    };
-    ask(request,handler);
 }
 
 function reloadImage()
@@ -163,6 +148,7 @@ function removeAnnotation(button, album, imgFileName, category, term)
     }
 
 }
+
 function showAnnotations(album, imgFileName)
 {
     var params = {"album" : album, "imageName" : imgFileName};
@@ -171,7 +157,6 @@ function showAnnotations(album, imgFileName)
     {
         if(j["status"] == "SUCCESS")
         {
-
             var imageTagsDiv = document.getElementById("imageTags");
             clearChildren(imageTagsDiv);
             for (var i = 0; i < j["data"]["terms"].length; i++) {
@@ -343,18 +328,34 @@ function displayImages(album)
 
 function tagImage(aButton, tagCategory, tagName, albumName, imgName)
 {
-    aButton.onclick = function()
+    if(myImg.hasRegion())
     {
-        var params = {"album" : albumName, "imageName" : imgName, "category": tagCategory, "term" : tagName};
-        var request = newAsk("tag", params);
-        var handler = function(j)
-        {
-            if(j["status"] == "SUCCESS") {
-                showAnnotations(albumName, imgName);
-            }
+        aButton.onclick = function () {
+            var params = {"album": albumName, "imageName": imgName, "category": tagCategory, "term": tagName, "regions" : [myImg.getRegion()]};
+
+            var request = newAsk("localAnnotation", params);
+            var handler = function (j) {
+                if (j["status"] == "SUCCESS") {
+                    alert("Show local annotations on image");
+                    // showAnnotations(albumName, imgName);
+                }
+            };
+            ask(request, handler);
         };
-        ask(request, handler);
-    };
+    }
+    else {
+        aButton.onclick = function () {
+            var params = {"album": albumName, "imageName": imgName, "category": tagCategory, "term": tagName};
+
+            var request = newAsk("tag", params);
+            var handler = function (j) {
+                if (j["status"] == "SUCCESS") {
+                    showAnnotations(albumName, imgName);
+                }
+            };
+            ask(request, handler);
+        };
+    }
 }
 
 function displayTerms(categoryName)

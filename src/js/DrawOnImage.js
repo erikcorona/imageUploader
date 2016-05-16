@@ -35,6 +35,11 @@ DrawOnImage.prototype.getImage = function()
     return this.img;
 };
 
+DrawOnImage.prototype.hasRegion = function()
+{
+    return this.clicked.length > 0;
+}
+
 DrawOnImage.prototype.addSingleClick = function(pos)
 {
     this.clicked.push(pos);
