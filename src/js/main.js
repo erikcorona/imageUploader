@@ -20,8 +20,8 @@ function ask(request, handleReply)
         }
     };
 
-    xhttp.open("POST", "http://54.237.198.126:8088",true);
-    // xhttp.open("POST", "http://127.0.0.1:8088",true);
+    // xhttp.open("POST", "http://54.237.198.126:8088",true);
+    xhttp.open("POST", "http://127.0.0.1:8088",true);
     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     var ms = new Date().getTime();
     xhttp.send(JSON.stringify(request));
@@ -41,11 +41,6 @@ function ping()
        pingLabel.innerHTML = j["status"];
     };
     ask(request, handler);
-}
-
-function reloadImage()
-{
-    alert("Redraw image");
 }
 
 function createAlbum()
@@ -134,7 +129,7 @@ function getImageThumb(album, imgFileName)
     ask(request, handler);
 }
 
-function removeAnnotation(button, album, imgFileName, category, term)
+function removeTagEvent(button, album, imgFileName, category, term)
 {
     button.onclick = function()
     {
@@ -142,14 +137,32 @@ function removeAnnotation(button, album, imgFileName, category, term)
         var request = newAsk("eraseAnnotation", params);
         var handler = function (j) {
             if (j["status"] == "SUCCESS")
-                showAnnotations(album, imgFileName);
+                showTags(album, imgFileName);
         };
         ask(request, handler);
     }
-
 }
 
-function showAnnotations(album, imgFileName)
+function removeAnnotationEvent(button, guid)
+{
+    button.onclick = function()
+    {
+        var params = {"guid": guid};
+        var request = newAsk("eraseRegionAnnotation", params);
+        var handler = function (j) {
+
+             if (j["status"] == "SUCCESS"){
+                 myImg.removeAnnotation(guid);
+                 myImg.redraw();
+                 showAnnotations(myImg.album, myImg.imgFileName);
+                 // displaySelectedImage(myImg.album, myImg.imgFileName);
+             }
+         };
+         ask(request, handler);
+    }
+}
+
+function showTags(album, imgFileName)
 {
     var params = {"album" : album, "imageName" : imgFileName};
     var request = newAsk("getTags", params);
@@ -165,9 +178,52 @@ function showAnnotations(album, imgFileName)
                 var category = j["data"]["terms"][i]["category"];
                 var term = j["data"]["terms"][i]["term"];
                 button.innerHTML = category + ":" + term;
-                removeAnnotation(button, album, imgFileName, category, term);
+                removeTagEvent(button, album, imgFileName, category, term);
                 imageTagsDiv.appendChild(button);
             }
+        }
+    };
+    ask(request, handler);
+}
+
+function retrieveAndShowLocalAnnotation(guid)
+{
+    var params = {"guid" : guid};
+    var request = newAsk("singleAnnotation", params);
+    var handler = function(j)
+    {
+        if(j["status"] == "SUCCESS")
+        {
+            var imageTagsDiv = document.getElementById("imageAnnotations");
+
+            var button = document.createElement("button");
+            button.className = "PicSet";
+            var category = j["data"]["category"];
+            var term = j["data"]["term"];
+            var album = j["data"]["album"];
+            var regions = JSON.parse(j["data"]["regions"]);
+            button.innerHTML = category + ":" + term;
+            removeAnnotationEvent(button, guid);
+            myImg.addAnnotation(category,term,regions, guid);
+            imageTagsDiv.appendChild(button);
+        }
+    };
+
+    ask(request,handler);
+}
+
+function showAnnotations(album, imgFileName)
+{
+    var params = {"album" : album, "imageName" : imgFileName};
+    var request = newAsk("regionAnnotations", params);
+    var handler = function(j)
+    {
+        if(j["status"] == "SUCCESS")
+        {
+            var imageTagsDiv = document.getElementById("imageAnnotations");
+            clearChildren(imageTagsDiv);
+            for(var i = 0; i < j["data"]["guids"].length; i++)
+                retrieveAndShowLocalAnnotation(j["data"]["guids"][i]);
         }
     };
     ask(request, handler);
@@ -187,7 +243,7 @@ function displaySelectedImage(album, imgFileName)
             while(imgDiv.firstChild)
                 imgDiv.removeChild(imgDiv.firstChild);
 
-            myImg = new DrawOnImage(image);
+            myImg = new DrawOnImage(album, imgFileName, image);
             imgDiv.appendChild(myImg.getCanvas());
 
             var lab = document.getElementById("selectedImageName");
@@ -195,6 +251,7 @@ function displaySelectedImage(album, imgFileName)
 
             var albLabel = document.getElementById("selectedImageAlbumName");
             albLabel.innerHTML = album;
+            showTags(album, imgFileName);
             showAnnotations(album, imgFileName);
             clearChildren(document.getElementById("tagging"));
         }
@@ -212,15 +269,16 @@ function getImageName()
 {
     return document.getElementById("getImage").value;
 }
-function getImage()
-{
+
+// function getImage()
+// {
     // var album       = document.getElementById("getImageAlbum").value;
     // var imgFileName = document.getElementById("getImage").value;
 
-    displaySelectedImage(getAlbum(), getImageName);
+    // displaySelectedImage(getAlbum(), getImageName());
     // clearChildren(document.getElementById("tagging"));
     // showCategories();
-}
+// }
 
 function eraseImage()
 {
@@ -326,35 +384,33 @@ function displayImages(album)
     ask(request, handler);
 }
 
-function tagImage(aButton, tagCategory, tagName, albumName, imgName)
+function addTagImageButtonHandler(aButton, tagCategory, tagName, albumName, imgName)
 {
-    if(myImg.hasRegion())
+    aButton.onclick = function ()
     {
-        aButton.onclick = function () {
-            var params = {"album": albumName, "imageName": imgName, "category": tagCategory, "term": tagName, "regions" : [myImg.getRegion()]};
-
-            var request = newAsk("localAnnotation", params);
-            var handler = function (j) {
-                if (j["status"] == "SUCCESS") {
-                    alert("Show local annotations on image");
-                    // showAnnotations(albumName, imgName);
-                }
-            };
-            ask(request, handler);
-        };
-    }
-    else {
-        aButton.onclick = function () {
-            var params = {"album": albumName, "imageName": imgName, "category": tagCategory, "term": tagName};
-
-            var request = newAsk("tag", params);
-            var handler = function (j) {
+        var params;
+        var request;
+        var handler;
+        if(myImg.hasRegion()){
+             params = {"album": albumName, "imageName": imgName, "category": tagCategory, "term": tagName, "regions" : [myImg.getRegion()]};
+             myImg.clicked = [];
+             request = newAsk("localAnnotation", params);
+             handler = function (j) {
                 if (j["status"] == "SUCCESS") {
                     showAnnotations(albumName, imgName);
                 }
             };
-            ask(request, handler);
-        };
+        }
+        else {
+            params = {"album": albumName, "imageName": imgName, "category": tagCategory, "term": tagName};
+            request = newAsk("tag", params);
+            handler = function (j) {
+                if (j["status"] == "SUCCESS") {
+                    showTags(albumName, imgName);
+                }
+            };
+        }
+        ask(request, handler);
     }
 }
 
@@ -378,7 +434,7 @@ function displayTerms(categoryName)
             button.innerHTML = tagName;
             var albumName = document.getElementById("selectedImageAlbumName").innerHTML;
             var imgName   = document.getElementById("selectedImageName").innerHTML;
-            tagImage(button, categoryName, tagName, albumName, imgName);
+            addTagImageButtonHandler(button, categoryName, tagName, albumName, imgName);
             taggingDiv.appendChild(button);
         }
     };

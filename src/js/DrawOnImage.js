@@ -1,5 +1,7 @@
-function DrawOnImage(image)
+function DrawOnImage(album, imgFileName, image)
 {
+    this.album = album;
+    this.imgFileName = imgFileName;
     this.img = image;
 
     this.canv = document.createElement('canvas');
@@ -18,11 +20,11 @@ function DrawOnImage(image)
     this.annotations = [];
 }
 
-DrawOnImage.prototype.saveAnnotation = function(annotGUID)
+DrawOnImage.prototype.addAnnotation = function(termCategory, term, regions, annotGUID)
 {
     var region = this.clicked;
-    this.annotations.push(new Annotation(album, imageName, termCategory, term, region));
-    this.clicked = [];
+    this.annotations.push(new Annotation(this.album, this.imgFileName, termCategory, term, regions, annotGUID));
+    this.drawLocalAnnotation(regions);
 };
 
 DrawOnImage.prototype.getCanvas = function()
@@ -38,13 +40,24 @@ DrawOnImage.prototype.getImage = function()
 DrawOnImage.prototype.hasRegion = function()
 {
     return this.clicked.length > 0;
-}
+};
 
 DrawOnImage.prototype.addSingleClick = function(pos)
 {
     this.clicked.push(pos);
-}
+};
 
+DrawOnImage.prototype.removeAnnotation = function(guid)
+{
+    for(var i = 0; i < this.annotations.length; i++)
+    {
+        if(this.annotations[i].aGuid == guid)
+        {
+            this.annotations.splice(i,1);
+            return;
+        }
+    }
+};
 DrawOnImage.prototype.addCoordEvent = function(event)
 {
     var myImg = this;
@@ -70,27 +83,31 @@ DrawOnImage.prototype.addCoord = function(event)
     this.drawDots();
 };
 
+DrawOnImage.prototype.redraw = function()
+{
+    this.clearCanvas();
+    // for(var i = 0; i < this.annotations.length; i++)
+    //     this.drawLocalAnnotation(this.annotations[i].allRegions);
+};
+
 DrawOnImage.prototype.clearCanvas = function()
 {
     var ctx = this.canv.getContext('2d');
     this.canv.width  = this.img.width;
     this.canv.height = this.img.height;
     ctx.drawImage(this.img, 0,0, this.canv.width, this.canv.height);
-    // ctx.fillStyle = "#FF0000";
-    // ctx.fillRect(0,0,150,75);
-    // this.canv.addEventListener("click", drawDot, false);
 };
 
-DrawOnImage.prototype.drawDots = function ()
+DrawOnImage.prototype.drawDisjointRegion = function(region)
 {
     var canv = document.getElementById("singleImageCanv");
     var ctx = canv.getContext('2d');
-
     var radius = 4;
 
-    for(var i = 0; i < this.clicked.length; i++) {
+    for(var i = 0; i < region.length; i++)
+    {
+        var pos = region[i];
         ctx.beginPath();
-        var pos = this.clicked[i];
         ctx.arc(pos.x, pos.y, radius, 0, 2 * Math.PI, false);
         ctx.globalAlpha = 0.80;
         ctx.fillStyle = 'yellow';
@@ -102,9 +119,11 @@ DrawOnImage.prototype.drawDots = function ()
     }
 
     ctx.beginPath();
-    ctx.moveTo(this.clicked[0].x, this.clicked[0].y);
-    for(i = 1; i < this.clicked.length; i++) {
-        pos = this.clicked[i];
+    pos = region[0];
+    ctx.moveTo(pos.x, pos.y);
+    for(i = 1; i < region.length; i++)
+    {
+        pos = region[i];
         ctx.lineTo(pos.x, pos.y);
         ctx.globalAlpha = 0.20;
         ctx.fillStyle = 'cyan';
@@ -113,22 +132,59 @@ DrawOnImage.prototype.drawDots = function ()
     ctx.closePath();
 };
 
-
-function drawDot(event)
+DrawOnImage.prototype.drawLocalAnnotation = function(regions)
 {
-    var pos = mouseMoved(event);
+    for(var i = 0; i < regions.length; i++)
+        this.drawDisjointRegion(regions[i]);
+};
+
+
+DrawOnImage.prototype.drawDots = function ()
+{
     var canv = document.getElementById("singleImageCanv");
     var ctx = canv.getContext('2d');
 
-    var radius = 4;
-    // ctx.fillStyle = "#88e188";
-    ctx.beginPath();
-    ctx.arc(pos.x, pos.y, radius, 0, 2 * Math.PI, false);
-    ctx.fillStyle = 'yellow';
-    ctx.fill();
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = '#003300';
-    ctx.stroke();
-    // ctx.fillRect(0,0,150,75);
-    // ctx.fillRect(pos.x,pos.y,pos.x+150,pos.y+75);
-}
+    this.drawDisjointRegion(this.clicked);
+    // var radius = 4;
+    //
+    // for(var i = 0; i < this.clicked.length; i++) {
+    //     ctx.beginPath();
+    //     var pos = this.clicked[i];
+    //     ctx.arc(pos.x, pos.y, radius, 0, 2 * Math.PI, false);
+    //     ctx.globalAlpha = 0.80;
+    //     ctx.fillStyle = 'yellow';
+    //     ctx.fill();
+    //     ctx.lineWidth = 1;
+    //     ctx.strokeStyle = '#003300';
+    //     ctx.stroke();
+    //     ctx.closePath();
+    // }
+    //
+    // ctx.beginPath();
+    // ctx.moveTo(this.clicked[0].x, this.clicked[0].y);
+    // for(i = 1; i < this.clicked.length; i++) {
+    //     pos = this.clicked[i];
+    //     ctx.lineTo(pos.x, pos.y);
+    //     ctx.globalAlpha = 0.20;
+    //     ctx.fillStyle = 'cyan';
+    // }
+    // ctx.fill();
+    // ctx.closePath();
+};
+
+
+// function drawDot(event)
+// {
+//     var pos = mouseMoved(event);
+//     var canv = document.getElementById("singleImageCanv");
+//     var ctx = canv.getContext('2d');
+//
+//     var radius = 4;
+//     ctx.beginPath();
+//     ctx.arc(pos.x, pos.y, radius, 0, 2 * Math.PI, false);
+//     ctx.fillStyle = 'yellow';
+//     ctx.fill();
+//     ctx.lineWidth = 1;
+//     ctx.strokeStyle = '#003300';
+//     ctx.stroke();
+// }
