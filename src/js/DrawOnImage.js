@@ -108,8 +108,12 @@ DrawOnImage.prototype.clearCanvas = function()
 
 DrawOnImage.prototype.drawDisjointRegion = function(region, color)
 {
+    var lines = color != null;
+
     if(color == null)
         color = 'cyan';
+    else
+        ;
 
     var canv = document.getElementById("singleImageCanv");
     var ctx = canv.getContext('2d');
@@ -130,6 +134,7 @@ DrawOnImage.prototype.drawDisjointRegion = function(region, color)
     }
 
     ctx.beginPath();
+    ctx.lineWidth = 6;
     pos = region[0];
     ctx.moveTo(pos.x, pos.y);
     for(i = 1; i < region.length; i++)
@@ -138,8 +143,13 @@ DrawOnImage.prototype.drawDisjointRegion = function(region, color)
         ctx.lineTo(pos.x, pos.y);
         ctx.globalAlpha = 0.20;
         ctx.fillStyle = color;
+
     }
     ctx.fill();
+    ctx.globalAlpha = 1;
+    ctx.lineTo(region[0].x, region[0].y);
+    if(lines)
+        ctx.stroke();
     ctx.closePath();
 };
 
