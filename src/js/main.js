@@ -143,6 +143,21 @@ function removeTagEvent(button, album, imgFileName, category, term)
     }
 }
 
+function hoverAnnotationEvent(button, guid)
+{
+    button.onmouseover = function()
+    {
+        myImg.redraw();
+        myImg.highlightAnnotation(guid);
+    };
+
+    button.onmouseout = function()
+    {
+        myImg.redraw();
+        myImg.highlightAnnotation("empty");
+    };
+}
+
 function removeAnnotationEvent(button, guid)
 {
     button.onclick = function()
@@ -150,12 +165,10 @@ function removeAnnotationEvent(button, guid)
         var params = {"guid": guid};
         var request = newAsk("eraseRegionAnnotation", params);
         var handler = function (j) {
-
              if (j["status"] == "SUCCESS"){
                  myImg.removeAnnotation(guid);
                  myImg.redraw();
                  showAnnotations(myImg.album, myImg.imgFileName);
-                 // displaySelectedImage(myImg.album, myImg.imgFileName);
              }
          };
          ask(request, handler);
@@ -204,6 +217,7 @@ function retrieveAndShowLocalAnnotation(guid)
             var regions = JSON.parse(j["data"]["regions"]);
             button.innerHTML = category + ":" + term;
             removeAnnotationEvent(button, guid);
+            hoverAnnotationEvent(button, guid);
             myImg.addAnnotation(category,term,regions, guid);
             imageTagsDiv.appendChild(button);
         }
@@ -222,6 +236,8 @@ function showAnnotations(album, imgFileName)
         {
             var imageTagsDiv = document.getElementById("imageAnnotations");
             clearChildren(imageTagsDiv);
+            myImg.redraw();
+            myImg.annotations = [];
             for(var i = 0; i < j["data"]["guids"].length; i++)
                 retrieveAndShowLocalAnnotation(j["data"]["guids"][i]);
         }

@@ -78,16 +78,24 @@ DrawOnImage.prototype.addCoord = function(event)
 {
     var pos = mouseMoved(event);
     this.addSingleClick(pos);
-    // this.clicked.push(pos);
     this.clearCanvas();
     this.drawDots();
+};
+
+DrawOnImage.prototype.highlightAnnotation = function(guid)
+{
+    for(var i = 0; i < this.annotations.length; i++)
+    {
+        if(this.annotations[i].aGuid == guid)
+            this.drawLocalAnnotation(this.annotations[i].allRegions, "yellow");
+        else
+            this.drawLocalAnnotation(this.annotations[i].allRegions);
+    }
 };
 
 DrawOnImage.prototype.redraw = function()
 {
     this.clearCanvas();
-    // for(var i = 0; i < this.annotations.length; i++)
-    //     this.drawLocalAnnotation(this.annotations[i].allRegions);
 };
 
 DrawOnImage.prototype.clearCanvas = function()
@@ -98,8 +106,11 @@ DrawOnImage.prototype.clearCanvas = function()
     ctx.drawImage(this.img, 0,0, this.canv.width, this.canv.height);
 };
 
-DrawOnImage.prototype.drawDisjointRegion = function(region)
+DrawOnImage.prototype.drawDisjointRegion = function(region, color)
 {
+    if(color == null)
+        color = 'cyan';
+
     var canv = document.getElementById("singleImageCanv");
     var ctx = canv.getContext('2d');
     var radius = 4;
@@ -126,16 +137,16 @@ DrawOnImage.prototype.drawDisjointRegion = function(region)
         pos = region[i];
         ctx.lineTo(pos.x, pos.y);
         ctx.globalAlpha = 0.20;
-        ctx.fillStyle = 'cyan';
+        ctx.fillStyle = color;
     }
     ctx.fill();
     ctx.closePath();
 };
 
-DrawOnImage.prototype.drawLocalAnnotation = function(regions)
+DrawOnImage.prototype.drawLocalAnnotation = function(regions, color)
 {
     for(var i = 0; i < regions.length; i++)
-        this.drawDisjointRegion(regions[i]);
+        this.drawDisjointRegion(regions[i], color);
 };
 
 
@@ -145,46 +156,4 @@ DrawOnImage.prototype.drawDots = function ()
     var ctx = canv.getContext('2d');
 
     this.drawDisjointRegion(this.clicked);
-    // var radius = 4;
-    //
-    // for(var i = 0; i < this.clicked.length; i++) {
-    //     ctx.beginPath();
-    //     var pos = this.clicked[i];
-    //     ctx.arc(pos.x, pos.y, radius, 0, 2 * Math.PI, false);
-    //     ctx.globalAlpha = 0.80;
-    //     ctx.fillStyle = 'yellow';
-    //     ctx.fill();
-    //     ctx.lineWidth = 1;
-    //     ctx.strokeStyle = '#003300';
-    //     ctx.stroke();
-    //     ctx.closePath();
-    // }
-    //
-    // ctx.beginPath();
-    // ctx.moveTo(this.clicked[0].x, this.clicked[0].y);
-    // for(i = 1; i < this.clicked.length; i++) {
-    //     pos = this.clicked[i];
-    //     ctx.lineTo(pos.x, pos.y);
-    //     ctx.globalAlpha = 0.20;
-    //     ctx.fillStyle = 'cyan';
-    // }
-    // ctx.fill();
-    // ctx.closePath();
 };
-
-
-// function drawDot(event)
-// {
-//     var pos = mouseMoved(event);
-//     var canv = document.getElementById("singleImageCanv");
-//     var ctx = canv.getContext('2d');
-//
-//     var radius = 4;
-//     ctx.beginPath();
-//     ctx.arc(pos.x, pos.y, radius, 0, 2 * Math.PI, false);
-//     ctx.fillStyle = 'yellow';
-//     ctx.fill();
-//     ctx.lineWidth = 1;
-//     ctx.strokeStyle = '#003300';
-//     ctx.stroke();
-// }
