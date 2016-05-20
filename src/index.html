@@ -33,46 +33,6 @@
         </div>
         <hr>
 
-        <div id = "albumsDiv">
-            <p>Albums</p>
-            <Button onclick="showAlbums()"> showAlbums </Button>
-            <label id = "albums"> </label>
-            <br>
-            <Button onclick="createAlbum()"> createAlbum </Button>
-            <label for="newAlbumName">Name</label><input id="newAlbumName" type="text" style="width: 100px" value="insects"/><br>
-            <Button onclick="eraseAlbum()"> eraseAlbum </Button>
-            <label for="eraseAlbumName">Name</label><input id="eraseAlbumName" type="text" style="width: 100px" value="insects"/>
-        </div>
-        <hr>
-
-        <div id = "imagesDiv">
-            <p>Images</p>
-            <Button onclick="showImages()"> showImages </Button>
-            <label for="albumName">Album</label><input id="albumName" type="text" style="width: 100px" value="insects"/>
-            <label id = "images"> </label>
-            <br>
-            <input type="file" id="imageChooser" multiple onchange="uploadImage(this.files)">
-            <label for="uploadAlbumName">Album Name</label><input id="uploadAlbumName" type="text" style="width: 100px" value="insects"/><br>
-            <Button onclick="eraseImage()"> eraseImage </Button>
-            <label for="eraseImage">Image Name</label><input id="eraseImage" type="text" style="width: 100px" value="fireAnt.jpg"/>
-            <label for="eraseImageAlbum">Album Name</label><input id="eraseImageAlbum" type="text" style="width: 100px" value="insects"/>
-            <br>
-            <Button onclick="getImage()"> getImage </Button>
-            <label for="getImage">Image Name</label><input id="getImage" type="text" style="width: 100px" value="a.jpg"/>
-            <label for="getImageAlbum">Album Name</label><input id="getImageAlbum" type="text" style="width: 100px" value="insects"/>
-        </div>
-        <hr>
-        <div id = "annotationsDiv">
-            <p>Categories</p>
-            <Button onclick="showCategories()"> showCategories </Button>
-            <label id = "categories"> </label>
-            <br>
-            <Button onclick="createCategory()"> createCategory </Button>
-            <label for="newCategoryName">Name</label><input id="newCategoryName" type="text" style="width: 100px" value="Car Makes"/><br>
-            <Button onclick="eraseCategory()"> eraseCategory </Button>
-            <label for="eraseCategoryName">Name</label><input id="eraseCategoryName" type="text" style="width: 100px" value="Car Makes"/>
-        </div>
-        <hr>
 
 
         <div class="dropdown">
@@ -110,6 +70,23 @@
         <hr>
         <label>Whole Image Tags: </label><div id = "imageTags"></div>
         <hr>
+        <div id = "imagesDiv">
+            <p>Images</p>
+            <Button onclick="showImages()"> showImages </Button>
+            <label for="albumName">Album</label><input id="albumName" type="text" style="width: 100px" value="insects"/>
+            <label id = "images"> </label>
+            <br>
+            <input type="file" id="imageChooser" multiple onchange="uploadImage(this.files)">
+            <label for="uploadAlbumName">Album Name</label><input id="uploadAlbumName" type="text" style="width: 100px" value="insects"/><br>
+            <Button onclick="eraseImage()"> eraseImage </Button>
+            <label for="eraseImage">Image Name</label><input id="eraseImage" type="text" style="width: 100px" value="fireAnt.jpg"/>
+            <label for="eraseImageAlbum">Album Name</label><input id="eraseImageAlbum" type="text" style="width: 100px" value="insects"/>
+            <br>
+            <Button onclick="getImage()"> getImage </Button>
+            <label for="getImage">Image Name</label><input id="getImage" type="text" style="width: 100px" value="a.jpg"/>
+            <label for="getImageAlbum">Album Name</label><input id="getImageAlbum" type="text" style="width: 100px" value="insects"/>
+        </div>
+        <hr>
         <div id = "termsDiv">
             <p>Terms</p>
             <Button onclick="getTerms()"> showTerms </Button>
@@ -122,6 +99,28 @@
             <Button onclick="eraseTerms()"> eraseTerms </Button>
             <label for="eraseTerms">Term Name</label><input id="eraseTerms" type="text" style="width: 100px" value="Nissan"/>
             <label for="eraseTermCategory">Category</label><input id="eraseTermCategory" type="text" style="width: 100px" value="Car Makes"/>
+        </div>
+        <hr>
+        <div id = "albumsDiv">
+            <p>Albums</p>
+            <Button onclick="showAlbums()"> showAlbums </Button>
+            <label id = "albums"> </label>
+            <br>
+            <Button onclick="createAlbum()"> createAlbum </Button>
+            <label for="newAlbumName">Name</label><input id="newAlbumName" type="text" style="width: 100px" value="insects"/><br>
+            <Button onclick="eraseAlbum()"> eraseAlbum </Button>
+            <label for="eraseAlbumName">Name</label><input id="eraseAlbumName" type="text" style="width: 100px" value="insects"/>
+        </div>
+        <hr>
+        <div id = "annotationsDiv">
+            <p>Categories</p>
+            <Button onclick="showCategories()"> showCategories </Button>
+            <label id = "categories"> </label>
+            <br>
+            <Button onclick="createCategory()"> createCategory </Button>
+            <label for="newCategoryName">Name</label><input id="newCategoryName" type="text" style="width: 100px" value="Car Makes"/><br>
+            <Button onclick="eraseCategory()"> eraseCategory </Button>
+            <label for="eraseCategoryName">Name</label><input id="eraseCategoryName" type="text" style="width: 100px" value="Car Makes"/>
         </div>
         <hr>
         <hr>
