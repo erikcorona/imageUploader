@@ -148,6 +148,7 @@ DrawOnImage.prototype.drawDisjointRegion = function(region, color)
     ctx.fill();
     ctx.globalAlpha = 1;
     ctx.lineTo(region[0].x, region[0].y);
+    ctx.strokeStyle = 'black';
     if(lines)
         ctx.stroke();
     ctx.closePath();

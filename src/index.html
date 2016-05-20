@@ -110,14 +110,18 @@
             <label>Selected Image Album Name: </label><label id = "selectedImageAlbumName"></label>
             <br>
             <label>Selected Image File Name: </label><label id = "selectedImageName"></label>
+            <br>
+            <label>
+                <input type="checkbox" checked="checked" onchange="toggleAnnotations(this)">
+            </label> Show Annotations<br>
             <div id = "selectedImage">
                 <!--Selected Image Goes Here-->
             </div>
         </div>
         <hr>
-        <label>Whole Image Tags: </label><div id = "imageTags"></div>
-        <hr>
         <label>Region Annotations: </label><div id = "imageAnnotations"></div>
+        <hr>
+        <label>Whole Image Tags: </label><div id = "imageTags"></div>
         <hr>
         <hr>
         <hr>
