@@ -20,8 +20,8 @@ function ask(request, handleReply)
         }
     };
 
-    xhttp.open("POST", "http://54.237.198.126:8088",true);
-    // xhttp.open("POST", "http://127.0.0.1:8088",true);
+    // xhttp.open("POST", "http://54.237.198.126:8088",true);
+    xhttp.open("POST", "http://127.0.0.1:8088",true);
     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     var ms = new Date().getTime();
     xhttp.send(JSON.stringify(request));
@@ -293,15 +293,15 @@ function getImageName()
     return document.getElementById("getImage").value;
 }
 
-// function getImage()
-// {
-    // var album       = document.getElementById("getImageAlbum").value;
-    // var imgFileName = document.getElementById("getImage").value;
+function getImage()
+{
+    var album       = document.getElementById("getImageAlbum").value;
+    var imgFileName = document.getElementById("getImage").value;
 
-    // displaySelectedImage(getAlbum(), getImageName());
-    // clearChildren(document.getElementById("tagging"));
-    // showCategories();
-// }
+    displaySelectedImage(getAlbum(), getImageName());
+    clearChildren(document.getElementById("tagging"));
+    showCategories();
+}
 
 function eraseImage()
 {
