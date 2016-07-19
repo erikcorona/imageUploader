@@ -69,7 +69,33 @@ function prettyCategories(termsDiv, aCategory)
     termsDiv.appendChild(href);
 }
 
+function showCategories2(containerName)
+{
+    var request = newAsk("categoryNames", {});
+    var handler = function(j)
+    {
+        var categories = document.getElementById("categories");
+        categories.innerHTML = j["data"]["names"];
+
+        var dddiv = document.getElementById(containerName);
+        clearChildren(dddiv);
+        for(var i = 0; i < j["data"]["names"].length; i++)
+        {
+            var aCategory = j["data"]["names"][i];
+            prettyCategories(dddiv, aCategory);
+        }
+    };
+
+    ask(request, handler);
+}
+
 function showCategories()
+{
+    showCategories2("myDropdown");
+    showCategories2("myDropdown2");
+}
+
+function OLDshowCategories()
 {
     var request = newAsk("categoryNames", {});
     var handler = function(j)
@@ -407,6 +433,32 @@ function displayImages(album)
     ask(request, handler);
 }
 
+function tagSearch(category, tag)
+{
+    var mode     = document.getElementById("modeSearch"    ).value;
+
+    var params = {"category" : category, "tag" : tag, "mode" : mode};
+    var request = newAsk("tagSearch", params);
+    var handler = function(j)
+    {
+        var images = j["data"]["images"];
+
+        var str = "";
+
+        clearChildren(document.getElementById("thumbs"));
+        for(var i = 0; i < images.length; i++)
+        {
+            str += images[i]["album"] + ":" + images[i]["imageName"] + ", ";
+            getImageThumb(images[i]["album"],images[i]["imageName"]);
+        }
+
+        document.getElementById("tagSearchResults").innerHTML = str;
+
+    };
+
+    ask(request,handler);
+}
+
 function addTagImageButtonHandler(aButton, tagCategory, tagName, albumName, imgName)
 {
     aButton.onclick = function ()
@@ -414,6 +466,15 @@ function addTagImageButtonHandler(aButton, tagCategory, tagName, albumName, imgN
         var params;
         var request;
         var handler;
+
+        var tagSearchCB = document.getElementById("tagSearchToggle");
+
+        if(tagSearchCB.checked)
+        {
+            tagSearch(tagCategory, tagName);
+            return;
+        }
+
         if(myImg.hasRegion()){
              params = {"album": albumName, "imageName": imgName, "category": tagCategory, "term": tagName, "regions" : [myImg.getRegion()]};
              myImg.clicked = [];
@@ -589,6 +650,10 @@ function myFunction2() {
 
 function categoriesDropDown() {
     document.getElementById("myDropdown").classList.toggle("show");
+}
+
+function categoriesDropDown2() {
+    document.getElementById("myDropdown2").classList.toggle("show");
 }
 
 // Close the dropdown menu if the user clicks outside of it
