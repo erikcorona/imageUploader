@@ -52,6 +52,8 @@
             <label>
                 <input type="checkbox" id="tagSearchToggle">
             </label> Tag Search<br>
+            <br>
+            <label for="modeSearch">Mode</label><input id="modeSearch" type="text" style="width: 100px" value="comprehensive"/>
             <div id="tagging">
                 <!--Terms go here, example below-->
                 <!--<Button class = "PicSet"> chairs </Button>-->
@@ -140,19 +142,6 @@
             <label for="eraseCategoryName">Name</label><input id="eraseCategoryName" type="text" style="width: 100px" value="Car Makes"/>
         </div>
         <hr>
-        <div id = "tagSearchDiv">
-            <p>Tag Search</p>
-            <label for="categorySearch">Category</label><input id="categorySearch" type="text" style="width: 100px" value=""/><br>
-            <label for="termSearch">Term</label><input id="termSearch" type="text" style="width: 100px" value=""/><br>
-            <label for="modeSearch">Mode</label><input id="modeSearch" type="text" style="width: 100px" value="comprehensive"/>
-            <label id="tagSearchResults">{}</label>
-            <br>
-            <Button onclick="tagSearch()"> search </Button>
-            <button onclick="categoriesDropDown2()" class="dropbtn">Categories</button>
-            <div id="myDropdown2" class="dropdown-content">
-                <!--Tag categories go here-->
-            </div>
-        </div>
         <hr>
         <hr>
         <hr>
