@@ -20,7 +20,8 @@ function ask(request, handleReply)
         }
     };
 
-    xhttp.open("POST", "http://54.237.198.126:8088",true);
+    // xhttp.open("POST", "http://54.237.198.126:8088",true);
+    xhttp.open("POST", hostAddr,true);
     // xhttp.open("POST", "http://127.0.0.1:8088",true);
     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     var ms = new Date().getTime();
@@ -78,6 +79,8 @@ function showCategories2(containerName)
         categories.innerHTML = j["data"]["names"];
 
         var dddiv = document.getElementById(containerName);
+        if(dddiv == null)
+            return;
         clearChildren(dddiv);
         for(var i = 0; i < j["data"]["names"].length; i++)
         {
@@ -182,12 +185,14 @@ function hoverAnnotationEvent(button, guid)
     {
         myImg.redraw();
         myImg.highlightAnnotation(guid);
+        document.getElementById("tagNoteDisplay").value = myImg.getTagNote(guid);
     };
 
     button.onmouseout = function()
     {
         myImg.redraw();
         myImg.highlightAnnotation("empty");
+        document.getElementById("tagNoteDisplay").value = "display tag notes"
     };
 }
 
@@ -226,6 +231,13 @@ function showTags(album, imgFileName)
                 button.innerHTML = category + ":" + term;
                 removeTagEvent(button, album, imgFileName, category, term);
                 imageTagsDiv.appendChild(button);
+
+                var note    = j["data"]["terms"][i]["note"];
+                var guid    = j["data"]["terms"][i]["guid"];
+                // alert(note + " / " + guid);
+                myImg.addAnnotation(category,term,[], note, guid);
+                // hoverAnnotationEvent(category, term, [], note, guid);
+                hoverAnnotationEvent(button, guid);
             }
         }
     };
@@ -248,10 +260,11 @@ function retrieveAndShowLocalAnnotation(guid)
             var term = j["data"]["term"];
             var album = j["data"]["album"];
             var regions = JSON.parse(j["data"]["regions"]);
+            var note    = j["data"]["note"];
             button.innerHTML = category + ":" + term;
             removeAnnotationEvent(button, guid);
             hoverAnnotationEvent(button, guid);
-            myImg.addAnnotation(category,term,regions, guid);
+            myImg.addAnnotation(category,term,regions, note, guid);
             imageTagsDiv.appendChild(button);
         }
     };
@@ -425,7 +438,8 @@ function displayImages(album)
         images.innerHTML = j["data"]["images"];
         var imageNames = j["data"]["images"];
 
-        clearChildren(document.getElementById("thumbs"));
+        if(document.getElementById("thumbs") != null)
+            clearChildren(document.getElementById("thumbs"));
         for(var i = 0; i < imageNames.length; i++)
             getImageThumb(album,imageNames[i]);
     };
@@ -472,8 +486,9 @@ function addTagImageButtonHandler(aButton, tagCategory, tagName, albumName, imgN
             return;
         }
 
+        var note = document.getElementById("tagNote").value;
         if(myImg.hasRegion()){
-             params = {"album": albumName, "imageName": imgName, "category": tagCategory, "term": tagName, "regions" : [myImg.getRegion()]};
+             params = {"album": albumName, "imageName": imgName, "category": tagCategory, "term": tagName, "regions" : [myImg.getRegion()], "note" : note};
              myImg.clicked = [];
              request = newAsk("localAnnotation", params);
              handler = function (j) {
@@ -483,7 +498,7 @@ function addTagImageButtonHandler(aButton, tagCategory, tagName, albumName, imgN
             };
         }
         else {
-            params = {"album": albumName, "imageName": imgName, "category": tagCategory, "term": tagName};
+            params = {"album": albumName, "imageName": imgName, "category": tagCategory, "term": tagName, "note" : note};
             request = newAsk("tag", params);
             handler = function (j) {
                 if (j["status"] == "SUCCESS") {
@@ -491,6 +506,8 @@ function addTagImageButtonHandler(aButton, tagCategory, tagName, albumName, imgN
                 }
             };
         }
+
+        document.getElementById("sentJson").value = JSON.stringify(request);
         ask(request, handler);
     }
 }
@@ -587,6 +604,8 @@ function filterNonImages(files) {
 
 function clearChildren(el)
 {
+    if(el == null)
+        alert("here");
     while(el.firstChild)
         el.removeChild(el.firstChild);
 }
@@ -631,12 +650,29 @@ function showThumbGetPic(e){
     return img.src;
 }
 
+function toggleHost()
+{
+    if(hostAddr == "http://127.0.0.1:8088")
+        hostAddr = "http://54.237.198.126:8088"
+    else
+        hostAddr = "http://127.0.0.1:8088";
+    displayHostAddress();
+}
+
+function displayHostAddress()
+{
+    document.getElementById("hostAddr").innerHTML = hostAddr;
+}
+
 function init()
 {
+    hostAddr = "http://127.0.0.1:8088";
+    // hostAddr = "http://54.237.198.126:8088";
+    displayHostAddress();
     ping();
     showAlbums();
     showCategories();
-    displayImages("Cars");
+    displayImages("cars");
 }
 
 /* When the user clicks on the button,

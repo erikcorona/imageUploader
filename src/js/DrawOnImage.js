@@ -20,10 +20,10 @@ function DrawOnImage(album, imgFileName, image)
     this.annotations = [];
 }
 
-DrawOnImage.prototype.addAnnotation = function(termCategory, term, regions, annotGUID)
+DrawOnImage.prototype.addAnnotation = function(termCategory, term, regions, note, annotGUID)
 {
     var region = this.clicked;
-    this.annotations.push(new Annotation(this.album, this.imgFileName, termCategory, term, regions, annotGUID));
+    this.annotations.push(new Annotation(this.album, this.imgFileName, termCategory, term, regions, note, annotGUID));
     this.drawLocalAnnotation(regions);
 };
 
@@ -91,6 +91,21 @@ DrawOnImage.prototype.highlightAnnotation = function(guid)
         else
             this.drawLocalAnnotation(this.annotations[i].allRegions);
     }
+};
+
+DrawOnImage.prototype.getTagNote = function(guid)
+{
+    var empty = "no description";
+    for(var i = 0; i < this.annotations.length; i++)
+    {
+        if(this.annotations[i].aGuid == guid)
+            if(this.annotations[i].note.length == 0)
+                return empty;
+            else
+                return this.annotations[i].note;
+    }
+
+    return empty;
 };
 
 DrawOnImage.prototype.redraw = function()

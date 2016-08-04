@@ -1,5 +1,5 @@
 
-function Annotation(album, imageName, termCategory, term, regions, guid)
+function Annotation(album, imageName, termCategory, term, regions, aNote, guid)
 {
     this.album        = album       ;
     this.imageName    = imageName   ;
@@ -7,5 +7,6 @@ function Annotation(album, imageName, termCategory, term, regions, guid)
     this.term         = term        ;
     this.allRegions   = regions     ;
     this.aGuid        = guid        ;
+    this.note         = aNote       ;
 }
 

@@ -22,6 +22,7 @@
         <!-- Add your site or application content here -->
         <h1 id="title">ImageAnn Testing UI</h1>
         <hr>
+        <label><b>Host Address:</b></label><label id = "hostAddr"></label> <button id ="toggleHost" onclick="toggleHost()">Toggle</button><br>
         <label><b>Status of last server request: </b></label><label id = "errorLabel"> OK </label>
         <br>
         <label><b>Time for server to respond: </b></label><label id = "ms">Time in (ms): </label>
@@ -58,6 +59,14 @@
                 <!--Terms go here, example below-->
                 <!--<Button class = "PicSet"> chairs </Button>-->
             </div>
+            <div>
+                <label>
+                    <textarea id="tagNote" rows="4" cols="80">Enter tag annotation here</textarea>
+                </label>
+                <label>
+                    <textarea id="tagNoteDisplay" rows="4" cols="80">Tag notes displayed here</textarea>
+                </label>
+            </div>
             <div id = "thumbs">
                 <!--Selected Image Goes Here-->
             </div>
@@ -76,7 +85,6 @@
         </div>
         <hr>
         <label>Region Annotations: </label><div id = "imageAnnotations"></div>
-        <hr>
         <label>Whole Image Tags: </label><div id = "imageTags"></div>
         <hr>
         <div id = "imagesDiv">
@@ -142,6 +150,9 @@
             <label for="eraseCategoryName">Name</label><input id="eraseCategoryName" type="text" style="width: 100px" value="Car Makes"/>
         </div>
         <hr>
+        <label for="sentJson"></label><textarea id="sentJson" rows="4" cols="150">
+            JSON requests will be shown here
+        </textarea>
         <hr>
         <hr>
         <hr>
