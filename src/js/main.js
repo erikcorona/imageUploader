@@ -223,7 +223,8 @@ function showTags(album, imgFileName)
         {
             var imageTagsDiv = document.getElementById("imageTags");
             clearChildren(imageTagsDiv);
-            for (var i = 0; i < j["data"]["terms"].length; i++) {
+            for (var i = 0; i < j["data"]["terms"].length; i++)
+            {
                 var button = document.createElement("button");
                 button.className = "PicSet";
                 var category = j["data"]["terms"][i]["category"];
@@ -487,7 +488,8 @@ function addTagImageButtonHandler(aButton, tagCategory, tagName, albumName, imgN
         }
 
         var note = document.getElementById("tagNote").value;
-        if(myImg.hasRegion()){
+        if(myImg.hasRegion())
+        {
              params = {"album": albumName, "imageName": imgName, "category": tagCategory, "term": tagName, "regions" : [myImg.getRegion()], "note" : note};
              myImg.clicked = [];
              request = newAsk("localAnnotation", params);
@@ -653,7 +655,8 @@ function showThumbGetPic(e){
 function toggleHost()
 {
     if(hostAddr == "http://127.0.0.1:8088")
-        hostAddr = "http://54.237.198.126:8088"
+        // hostAddr = "http://54.237.198.126:8088"
+        hostAddr = "http://52.4.149.27:8088";
     else
         hostAddr = "http://127.0.0.1:8088";
     displayHostAddress();
@@ -666,8 +669,9 @@ function displayHostAddress()
 
 function init()
 {
-    hostAddr = "http://127.0.0.1:8088";
+    // hostAddr = "http://127.0.0.1:8088";
     // hostAddr = "http://54.237.198.126:8088";
+    hostAddr = "http://52.4.149.27:8088";
     displayHostAddress();
     ping();
     showAlbums();
